@@ -1,7 +1,10 @@
 group 'com.github.modouxiansheng'
-version '1.0-SNAPSHOT'
+version '2.1.0-release'
 
 apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'signing' //使用signing plugin做数字签名
+apply plugin: 'idea'
 
 sourceCompatibility = 1.8
 
@@ -9,6 +12,76 @@ repositories {
     mavenCentral()
 }
 
+
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+tasks.withType(Javadoc) {
+    options.addStringOption('Xdoclint:none', '-quiet')
+    options.addStringOption('encoding', 'UTF-8')
+    options.addStringOption('charSet', 'UTF-8')
+}
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            //为Pom文件做数字签名
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            //指定项目部署到的中央库地址，UserName和Password就是Part 1中注册的账号。
+            repository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: "PengFeiD", password: "rCZqnfLG6pdN.W9")
+            }
+            //构造项目的Pom文件，参见Part 2中Pom文件的规范，不要遗漏必填项
+            pom.project {
+                name project.name
+                packaging 'jar'
+                description 'Toggle is a little java tool to make your life easier when you try to use Feature Toggle in Java.'
+                url 'https://github.com/modouxiansheng/convenientUtil'
+
+                scm {
+                    url 'scm:git@github.com:modouxiansheng/convenientUtil.git'
+                    connection 'scm:git@github.com:modouxiansheng/convenientUtil.git'
+                    developerConnection 'git@github.com:modouxiansheng/convenientUtil.git'
+                }
+
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution 'repo'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'modouxiansheng'
+                        name 'D.Hu'
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from 'build/docs/javadoc'
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives jar
+    archives javadocJar
+    archives sourcesJar
+}
+
+//为所有的jar包做数字签名
+signing {
+    sign configurations.archives
 }
