@@ -36,6 +36,6 @@ HashSet<String> tableName = new TableNameParser("select * from A").tables();
 
 ```
 String path="";//存放xml的全路径名
-HashSet<String> tableName = TableNameParser.getTableName(path);
+HashSet<String> tableName = GetTableName.getTableName(path);
 
 ```
