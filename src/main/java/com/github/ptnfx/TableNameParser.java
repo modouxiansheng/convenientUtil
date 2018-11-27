@@ -42,10 +42,7 @@ public final class TableNameParser {
 
 	private Map<String, String> tables = new HashMap<String, String>();
 
-	/**
-	 * Extracts table names out of SQL
-	 * @param sql
-	 */
+
 	public TableNameParser(final String sql) {
 		//去掉"--"注解
 		String nocomments = removeComments(sql);
@@ -124,7 +121,7 @@ public final class TableNameParser {
 	}
 
 	private boolean isOracleSpecialDelete(final String currentToken, final String[] tokens, int index) {
-		index++;// Point to next token
+		index++;
 		if (TOKEN_DELETE.equals(currentToken)) {
 			if (moreTokens(tokens, index)) {
 				String nextToken = tokens[index++];
@@ -142,7 +139,7 @@ public final class TableNameParser {
 	}
 
 	private boolean isCreateIndex(String currentToken, String[] tokens, int index) {
-		index++; // Point to next token
+		index++;
 		if (TOKEN_CREATE.equals(currentToken.toLowerCase()) && hasIthToken(tokens, index, 3)) {
 			String nextToken = tokens[index++];
 			if (TOKEN_INDEX.equals(nextToken.toLowerCase())) {
@@ -236,10 +233,7 @@ public final class TableNameParser {
 			this.tables.put(token.toLowerCase(), token);
 		}
 	}
-	/**
-	 * 
-	 * @return table names extracted out of sql
-	 */
+
 	public Collection<String> tables() {
 		return new HashSet<String>(this.tables.values());
 	}

@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
  **/
 public final class GetTableName {
 
-    private static HashSet<String> getTableName(String path) throws IOException {
+    public static HashSet<String> getTableName(String path) throws IOException {
         return getFileName(path);
     }
 

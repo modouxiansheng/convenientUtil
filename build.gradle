@@ -1,5 +1,5 @@
 group 'com.github.modouxiansheng'
-version '2.1.0-release'
+version '1.1-release'
 
 apply plugin: 'java'
 apply plugin: 'maven'
@@ -29,7 +29,7 @@ uploadArchives {
             beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
             //指定项目部署到的中央库地址，UserName和Password就是Part 1中注册的账号。
-            repository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+            repository(url: "https://oss.sonatype.org/content/repositories/releases/") {
                 authentication(userName: "PengFeiD", password: "rCZqnfLG6pdN.W9")
             }
             //构造项目的Pom文件，参见Part 2中Pom文件的规范，不要遗漏必填项
