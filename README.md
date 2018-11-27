@@ -12,14 +12,14 @@ Maven
 <dependency>
   <groupId>com.github.modouxiansheng</groupId>
   <artifactId>convenientUtil</artifactId>
-  <version>1.0-release</version>
+  <version>1.1-release</version>
 </dependency>
 ```
 
 Gradle
 
 ```
-compile 'com.github.modouxiansheng:convenientUtil:1.0-release'
+compile 'com.github.modouxiansheng:convenientUtil:1.1-release'
 
 ```
 
