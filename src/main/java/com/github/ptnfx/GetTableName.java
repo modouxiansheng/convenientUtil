@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 /**
  * @program: convenientUtil
  * @description: 从xml中获取到表名
- * @author: hu_pf@suixingpay.com
+ * @author: hu_pf
  * @create: 2018-11-23 13:40
  **/
 public final class GetTableName {
