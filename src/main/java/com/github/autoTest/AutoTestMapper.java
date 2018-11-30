@@ -14,7 +14,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -26,12 +25,11 @@ import java.util.stream.Stream;
 
 /**
  * @program: demo
- * @description:
+ * @description: 自动测试Mapper
  * @author: hu_pf
  * @create: 2018-11-28 12:28
  **/
 public class AutoTestMapper {
-
 
     private static final Map<String, Class<?>> primitiveClazz; // 基本类型的class
     private static String PACK_PATH = "";
@@ -92,7 +90,7 @@ public class AutoTestMapper {
         for (String fileName : FILE_NAME) {
             Class cls = Class.forName(PACK_PATH + "." + fileName);
             //添加Mapper
-            if (!sqlSessionFactory.getConfiguration().hasMapper(cls)){
+            if (!sqlSessionFactory.getConfiguration().hasMapper(cls)) {
                 sqlSessionFactory.getConfiguration().addMapper(cls);
             }
             //获得Mapper
@@ -120,24 +118,26 @@ public class AutoTestMapper {
         for (Method method : declaredMethods) {
             List<Object> list = new ArrayList<>();
             for (Class cls : method.getParameterTypes()) {
-                Object par = assignmentPrimitive(cls,method,c);
+                Object par = assignmentPrimitive(cls, method, c);
                 list.add(par);
             }
             try {
                 method.invoke(o, list.toArray());
                 invokeSuccess.add("Success: " + fileName + "." + method.getName());
             } catch (Exception e) {
-                if (e.getCause()!=null){
+                if (e.getCause() != null) {
                     String errorInf = e.getCause().getMessage();
-                    if (errorInf.contains("MySQLSyntaxErrorException")){
-                        invokeFail.add("|Error: |" +fileName +"."+ method.getName() + "| " + errorInf.substring(errorInf.lastIndexOf("MySQLSyntaxErrorException:")+"MySQLSyntaxErrorException:".length()).replaceAll("'","`")+"|");
+                    if (errorInf.contains("MySQLSyntaxErrorException")) {
+                        invokeFail.add("|Error: |" + fileName + "." + method.getName() + "| " + errorInf.substring(
+                                errorInf.lastIndexOf("MySQLSyntaxErrorException:") + "MySQLSyntaxErrorException:"
+                                        .length()).replaceAll("'", "`") + "|");
+                    } else {
+                        invokeFail.add("|Error: |" + fileName + "." + method.getName() + "| " + errorInf
+                                .substring(errorInf.lastIndexOf("Cause:") + "Cause:".length()).replaceAll("'", "`")
+                                + "|");
                     }
-                    else {
-                        invokeFail.add("|Error: |" +fileName +"."+ method.getName() + "| " + errorInf.substring(errorInf.lastIndexOf("Cause:")+"Cause:".length()).replaceAll("'","`")+"|");
-                    }
-                }
-                else {
-                    System.out.println("|Error: |" +fileName +"."+ method.getName() + "| " + e);
+                } else {
+                    invokeFail.add("|Error: |" + fileName + "." + method.getName() + "| " + e);
                 }
             }
 
@@ -148,7 +148,7 @@ public class AutoTestMapper {
     }
 
     //为基础类型和包装类赋值
-    private Object assignmentPrimitive(Class cls,Method method,Class c)
+    private Object assignmentPrimitive(Class cls, Method method, Class c)
             throws IllegalAccessException, InvocationTargetException, InstantiationException, IntrospectionException {
         Object par = new Object();
         if (TYPE_ARRAY.contains(cls)) {
@@ -165,38 +165,38 @@ public class AutoTestMapper {
                     try {
                         par = cls.getDeclaredConstructor(String.class).newInstance("1");
 
-                    }catch (NoSuchMethodException e1){
-                        System.out.println(cls.getName()+e);
+                    } catch (NoSuchMethodException e1) {
+                        System.out.println(cls.getName() + e);
                     }
                 }
             }
-        }else if ("java.util.Map".equals(cls.getName())){
-            par = getMapData(c.getName()+"."+method.getName());
+        } else if ("java.util.Map".equals(cls.getName())) {
+            par = getMapData(c.getName() + "." + method.getName());
         }
         return par;
     }
 
     //获得xml文件中的#{}中的key值
-    private Map<String,Object> getMapData(String url){
-        Map<String,Object> resultMap = new HashMap<>();
-        Map<String,Object> parameterMap = new HashMap<String,Object>();
+    private Map<String, Object> getMapData(String url) {
+        Map<String, Object> resultMap = new HashMap<>();
+        Map<String, Object> parameterMap = new HashMap<String, Object>();
         BoundSql sql = null;
-        parameterMap.put("tranSno","111");
+        parameterMap.put("tranSno", "111");
         try {
             sql = configuration.getMappedStatement(url).getBoundSql(parameterMap);
-        }catch (BuilderException exception){
+        } catch (BuilderException exception) {
             System.out.println(exception);
         }
-        if (sql!=null){
+        if (sql != null) {
             List<ParameterMapping> parameterMappings = sql.getParameterMappings();
             parameterMappings.forEach(parameterMapping -> {
                 String key = parameterMapping.getProperty();
-                if ("startRow".equals(key)){
-                    resultMap.put(key,1);
-                }else if ("endRow".equals(key)){
-                    resultMap.put(key,2);
-                }else {
-                    resultMap.put(key,"1");
+                if ("startRow".equals(key)) {
+                    resultMap.put(key, 1);
+                } else if ("endRow".equals(key)) {
+                    resultMap.put(key, 2);
+                } else {
+                    resultMap.put(key, "1");
                 }
             });
         }
