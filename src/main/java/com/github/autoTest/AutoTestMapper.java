@@ -36,12 +36,16 @@ public class AutoTestMapper {
     private static List<String> FILE_NAME = new ArrayList<>();
     private static final String SUCCESS_FLG = "success";
     private static final String FAIL_FLG = "fail";
+    private static final String PATH_PATTERN = "import [a-z,A-Z,/.]+;";
+    private static final String PACK_PATTERN = "package [a-z,A-Z,/.]+;";
+    private static final String IMPORT_REGEX = "import ";
+    private static final String PACK_REGEX = "package ";
+
     private Configuration configuration;
     private static List<Class> TYPE_ARRAY = Stream
             .of(String.class, Integer.class, Byte.class, Short.class, Long.class, Float.class, Double.class,
                     Boolean.class, byte.class, short.class, int.class, long.class, char.class, float.class,
                     double.class, boolean.class).collect(Collectors.toList());
-
     private static final String INTEGER = "int";
     private static final String BYTE = "byte";
     private static final String SHORT = "short";
@@ -63,10 +67,9 @@ public class AutoTestMapper {
 
     public AutoTestMapper(String path) throws IOException, ClassNotFoundException {
         String mapperContent = getFileContent(path);
-        String pathPattern = "import [a-z,A-Z,/.]+;";
-        String[] pathArr = matchMethod(pathPattern, mapperContent).split(";");
+        String[] pathArr = matchMethod(PATH_PATTERN, mapperContent).split(";");
         for (int i = 0; i < pathArr.length; i++) {
-            pathArr[i] = pathArr[i].replaceAll("import ", "");
+            pathArr[i] = pathArr[i].replaceAll(IMPORT_REGEX, "");
             Class cls = Class.forName(pathArr[i]);
             if (!cls.isInterface()) {
                 //把实体类放入类型集合中
@@ -74,9 +77,8 @@ public class AutoTestMapper {
             }
         }
         //获得全路径名的前缀
-        String packPattern = "package [a-z,A-Z,/.]+;";
-        String[] packPathArr = matchMethod(packPattern, mapperContent).split(";");
-        String packPath = packPathArr[0].replaceAll("package ", "").replaceAll(";", "");
+        String[] packPathArr = matchMethod(PACK_PATTERN, mapperContent).split(";");
+        String packPath = packPathArr[0].replaceAll(PACK_REGEX, "").replaceAll(";", "");
         this.PACK_PATH = packPath;
     }
 
