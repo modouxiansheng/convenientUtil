@@ -1,5 +1,6 @@
 package com.github.autoTest;
 
+import org.apache.ibatis.builder.BuilderException;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.ParameterMapping;
 import org.apache.ibatis.session.Configuration;
@@ -31,13 +32,12 @@ import java.util.stream.Stream;
  **/
 public class AutoTestMapper {
 
+
     private static final Map<String, Class<?>> primitiveClazz; // 基本类型的class
     private static String PACK_PATH = "";
     private static List<String> FILE_NAME = new ArrayList<>();
     private static final String SUCCESS_FLG = "success";
     private static final String FAIL_FLG = "fail";
-    private static final String PATH_PARTTERN = "import [a-z,A-Z,/.]+;";
-    private static final String PACK_PARTTERN = "package [a-z,A-Z,/.]+;";
     private Configuration configuration;
     private static List<Class> TYPE_ARRAY = Stream
             .of(String.class, Integer.class, Byte.class, Short.class, Long.class, Float.class, Double.class,
@@ -65,7 +65,8 @@ public class AutoTestMapper {
 
     public AutoTestMapper(String path) throws IOException, ClassNotFoundException {
         String mapperContent = getFileContent(path);
-        String[] pathArr = matchMethod(PATH_PARTTERN, mapperContent).split(";");
+        String pathPattern = "import [a-z,A-Z,/.]+;";
+        String[] pathArr = matchMethod(pathPattern, mapperContent).split(";");
         for (int i = 0; i < pathArr.length; i++) {
             pathArr[i] = pathArr[i].replaceAll("import ", "");
             Class cls = Class.forName(pathArr[i]);
@@ -75,7 +76,8 @@ public class AutoTestMapper {
             }
         }
         //获得全路径名的前缀
-        String[] packPathArr = matchMethod(PACK_PARTTERN, mapperContent).split(";");
+        String packPattern = "package [a-z,A-Z,/.]+;";
+        String[] packPathArr = matchMethod(packPattern, mapperContent).split(";");
         String packPath = packPathArr[0].replaceAll("package ", "").replaceAll(";", "");
         this.PACK_PATH = packPath;
     }
@@ -110,7 +112,7 @@ public class AutoTestMapper {
             throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException,
             IntrospectionException {
         Method[] declaredMethods = c.getDeclaredMethods();
-        String fileName = c.getName().substring(c.getName().lastIndexOf("."));
+        String fileName = c.getName().substring(c.getName().lastIndexOf(".")).substring(1);
         List<String> invokeSuccess = new ArrayList<>();
         List<String> invokeFail = new ArrayList<>();
         Map<String, List<String>> resultMap = new HashMap<>();
@@ -125,12 +127,17 @@ public class AutoTestMapper {
                 method.invoke(o, list.toArray());
                 invokeSuccess.add("Success: " + fileName + "." + method.getName());
             } catch (Exception e) {
-                String errorInf = e.getCause().getMessage();
-                if (errorInf.contains("MySQLSyntaxErrorException")){
-                    invokeFail.add("Error:" + method.getName() + "   Error Info:" + errorInf.substring(errorInf.lastIndexOf("MySQLSyntaxErrorException:")+"MySQLSyntaxErrorException:".length()));
+                if (e.getCause()!=null){
+                    String errorInf = e.getCause().getMessage();
+                    if (errorInf.contains("MySQLSyntaxErrorException")){
+                        invokeFail.add("|Error: |" +fileName +"."+ method.getName() + "| " + errorInf.substring(errorInf.lastIndexOf("MySQLSyntaxErrorException:")+"MySQLSyntaxErrorException:".length()).replaceAll("'","`")+"|");
+                    }
+                    else {
+                        invokeFail.add("|Error: |" +fileName +"."+ method.getName() + "| " + errorInf.substring(errorInf.lastIndexOf("Cause:")+"Cause:".length()).replaceAll("'","`")+"|");
+                    }
                 }
                 else {
-                    invokeFail.add("Error:" + method.getName() + "   Error Info:" + errorInf.substring(errorInf.lastIndexOf("Cause:")+"Cause:".length()));
+                    System.out.println("|Error: |" +fileName +"."+ method.getName() + "| " + e);
                 }
             }
 
@@ -173,19 +180,26 @@ public class AutoTestMapper {
     private Map<String,Object> getMapData(String url){
         Map<String,Object> resultMap = new HashMap<>();
         Map<String,Object> parameterMap = new HashMap<String,Object>();
+        BoundSql sql = null;
         parameterMap.put("tranSno","111");
-        BoundSql sql = configuration.getMappedStatement(url).getBoundSql(parameterMap);
-        List<ParameterMapping> parameterMappings = sql.getParameterMappings();
-        parameterMappings.forEach(parameterMapping -> {
-            String key = parameterMapping.getProperty();
-            if ("startRow".equals(key)){
-                resultMap.put(key,1);
-            }else if ("endRow".equals(key)){
-                resultMap.put(key,2);
-            }else {
-                resultMap.put(key,"1");
-            }
-        });
+        try {
+            sql = configuration.getMappedStatement(url).getBoundSql(parameterMap);
+        }catch (BuilderException exception){
+            System.out.println(exception);
+        }
+        if (sql!=null){
+            List<ParameterMapping> parameterMappings = sql.getParameterMappings();
+            parameterMappings.forEach(parameterMapping -> {
+                String key = parameterMapping.getProperty();
+                if ("startRow".equals(key)){
+                    resultMap.put(key,1);
+                }else if ("endRow".equals(key)){
+                    resultMap.put(key,2);
+                }else {
+                    resultMap.put(key,"1");
+                }
+            });
+        }
         return resultMap;
     }
 
