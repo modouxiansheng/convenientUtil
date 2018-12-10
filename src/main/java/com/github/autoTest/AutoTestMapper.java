@@ -104,7 +104,17 @@ public class AutoTestMapper {
         }
         invokeSuccess.forEach(s -> System.out.println(s));
         System.out.println("-------------------");
-        invokeFail.forEach(s -> System.out.println(s));
+        invokeFail.forEach(s -> {
+            if (s.contains("id bound statement")){
+
+            }else if (s.contains(" source is null for getProperty")){
+
+            }else if (s.contains("argument type mismatch")){
+
+            }else {
+                System.out.println(s);
+            }
+        });
         return list;
     }
 
