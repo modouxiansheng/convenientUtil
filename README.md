@@ -83,3 +83,5 @@ autoTestMapper.openSqlSession(sqlSessionFactory);
 ```
 	
 4. 然后会打印出执行成功的Sql，执行失败的Sql。如果失败的话会有原因。
+
+5. 如果想要在项目的测试中要测试到所有的`if`分支的话，那么就引入在`github`中的lib文件夹下的`mybatis`包，将其放入自己的项目中，然后进行引用，这样就能够测到所有的`if`分支了
