@@ -186,7 +186,7 @@ public class AutoTestMapper {
         parameterMap.put("tranSno", "111");
         try {
             sql = configuration.getMappedStatement(url).getBoundSql(parameterMap);
-        } catch (BuilderException exception) {
+        } catch (Exception exception) {
             System.out.println(exception);
         }
         if (sql != null) {
