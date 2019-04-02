@@ -59,6 +59,8 @@ public class EasyExcelUtil<T>
      */
     public Class<T> clazz;
 
+    private String filePath = "";
+
     public static String DATA = "date";
     public static String ERROE_INF = "errorInf";
 
@@ -67,7 +69,7 @@ public class EasyExcelUtil<T>
         this.clazz = clazz;
     }
 
-    public void init(List<T> list, String sheetName)
+    public void init(List<T> list, String sheetName,String filePath)
     {
         if (list == null)
         {
@@ -75,6 +77,7 @@ public class EasyExcelUtil<T>
         }
         this.list = list;
         this.sheetName = sheetName;
+        this.filePath = filePath;
         createExcelField();
         createWorkbook();
     }
@@ -246,9 +249,9 @@ public class EasyExcelUtil<T>
      * @param sheetName 工作表的名称
      * @return 结果
      */
-    public void exportExcel(List<T> list, String sheetName)
+    public void exportExcel(List<T> list, String sheetName,String filePath)
     {
-        this.init(list, sheetName);
+        this.init(list, sheetName,filePath);
         exportExcel();
     }
 
@@ -258,9 +261,9 @@ public class EasyExcelUtil<T>
      * @param sheetName 工作表的名称
      * @return 结果
      */
-    public void importTemplateExcel(String sheetName)
+    public void exportTemplateExcel(String sheetName,String filePath)
     {
-        this.init(null, sheetName);
+        this.init(null, sheetName,filePath);
         exportExcel();
     }
 
@@ -269,7 +272,7 @@ public class EasyExcelUtil<T>
      *
      * @return 结果
      */
-    private OutputStream exportExcel()
+    private void exportExcel()
     {
         OutputStream out = null;
         try
@@ -315,7 +318,13 @@ public class EasyExcelUtil<T>
                 fillExcelData(index, row, cell);
             }
             String filename = encodingFilename(sheetName);
-            out = new FileOutputStream("/Users/hupengfei/Downloads/"+filename);
+            if (!StringUtils.isEmpty(filePath)){
+                if (filePath.lastIndexOf("/")==filePath.length()-1){
+                    out = new FileOutputStream(filePath+filename);
+                }else {
+                    out = new FileOutputStream(filePath+filename);
+                }
+            }
             wb.write(out);
             out.flush();
         }
@@ -484,7 +493,9 @@ public class EasyExcelUtil<T>
      */
     private void putToFields(List<Field> fields) {
         for (Field field : fields) {
-            this.fields.add(field);
+            if (field.isAnnotationPresent(Excel.class)){
+                this.fields.add(field);
+            }
         }
     }
     /**
