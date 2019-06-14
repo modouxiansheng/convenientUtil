@@ -4,8 +4,11 @@
 
 1. `TableNameParser`：获得表名工具类例子如下
 2. `AutoTestMapper`: 自动测试项目中的Sql是否正确
+3. `FindDuplicate`: 找出项目中同名类
 
 ## 导入Jar包
+
+> 具体版本号可以去[中央仓库](https://search.maven.org/)查询modouxiansheng即可获得最新版本号
 
 Maven
 
@@ -13,14 +16,14 @@ Maven
 <dependency>
   <groupId>com.github.modouxiansheng</groupId>
   <artifactId>convenientUtil</artifactId>
-  <version>1.2-release</version>
+  <version>最新版本号</version>
 </dependency>
 ```
 
 Gradle
 
 ```
-compile 'com.github.modouxiansheng:convenientUtil:1.1-release'
+compile 'com.github.modouxiansheng:convenientUtil:最新版本号'
 
 ```
 
