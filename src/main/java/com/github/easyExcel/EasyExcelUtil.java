@@ -304,10 +304,11 @@ public class EasyExcelUtil<T>
                     font.setBold(true);
                     // 选择需要用到的字体格式
                     cellStyle.setFont(font);
-                    cellStyle.setFillForegroundColor(HSSFColorPredefined.LIGHT_YELLOW.getIndex());
-                    // 设置列宽
-                    sheet.setColumnWidth(i, (int) (20 + 0.72) * 256);
-                    row.setHeight((short) (50 * 20));
+                    cellStyle.setFillForegroundColor(HSSFColorPredefined.WHITE.getIndex());// 设置白底
+                    cellStyle.setBorderBottom(BorderStyle.THIN);//下边框
+                    cellStyle.setBorderLeft(BorderStyle.THIN);//左边框
+                    cellStyle.setBorderRight(BorderStyle.THIN);//右边框
+                    cellStyle.setBorderTop(BorderStyle.THIN); //上边框
 
                     cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
                     cellStyle.setWrapText(true);
