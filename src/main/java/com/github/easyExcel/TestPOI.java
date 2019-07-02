@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * @program: Test
  * @description:
- * @author: hu_pf@suixingpay.com
+ * @author: hu_pf
  * @create: 2019-04-01 16:40
  **/
 public class TestPOI {
@@ -17,7 +17,6 @@ public class TestPOI {
         InputStream inputStream = new FileInputStream("/Users/hupengfei/Downloads/1c5ec464-c0d4-4138-a786-c177688afe55_1.xlsx");
         EasyExcelUtil<Student> easyExcelUtil = new EasyExcelUtil<>(Student.class);
         Map<String,Object> students = easyExcelUtil.importExcel(inputStream);
-        easyExcelUtil.exportExcel((List<Student>)students.get(EasyExcelUtil.DATA),"1");
     }
 
 }

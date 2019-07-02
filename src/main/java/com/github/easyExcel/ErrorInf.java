@@ -3,7 +3,7 @@ package com.github.easyExcel;
 /**
  * @program: Test
  * @description:
- * @author: hu_pf@suixingpay.com
+ * @author: hu_pf
  * @create: 2019-04-02 11:03
  **/
 public class ErrorInf {
